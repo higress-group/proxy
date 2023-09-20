@@ -418,6 +418,11 @@ ENVOY_CONTRIB_EXTENSIONS = {
     #
 
     "envoy.network.connection_balance.dlb":                     "//contrib/network/connection_balance/dlb/source:connection_balancer",
+
+    # WAF extension
+
+    # Custom cluster plugins
+    "envoy.router.cluster_specifier_plugin.cluster_fallback":   "//contrib/custom_cluster_plugins/cluster_fallback/source:config",
 }
 
 
@@ -435,6 +440,7 @@ ISTIO_ENABLED_CONTRIB_EXTENSIONS = [
     "envoy.tls.key_providers.cryptomb",
     "envoy.tls.key_providers.qat",
     "envoy.network.connection_balance.dlb",
+    "envoy.router.cluster_specifier_plugin.cluster_fallback",
 ]
 
 EXTENSIONS = dict([(k,v) for k,v in ENVOY_EXTENSIONS.items() if not k in ISTIO_DISABLED_EXTENSIONS] +

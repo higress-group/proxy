@@ -18,6 +18,15 @@ load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load(
     "@envoy//bazel:envoy_build_system.bzl",
     "envoy_cc_binary",
+    "envoy_cc_contrib_extension",
+    "envoy_cc_library",
+    "envoy_contrib_package",
+)
+load(
+    "@envoy//contrib:all_contrib_extensions.bzl",
+    "ARM64_SKIP_CONTRIB_TARGETS",
+    "PPC_SKIP_CONTRIB_TARGETS",
+    "envoy_all_contrib_extensions",
 )
 
 exports_files(["LICENSE"])
@@ -51,6 +60,18 @@ envoy_cc_binary(
         "//source/extensions/filters/network/sni_verifier:config_lib",
         "//source/extensions/filters/network/tcp_cluster_rewrite:config_lib",
         "@envoy//source/exe:envoy_main_entry_lib",
+    ] + [
+        "@envoy//contrib/custom_cluster_plugins/cluster_fallback/source:config",
+        "@envoy//contrib/http_dubbo_transcoder/filters/http/source:config",
+        "@envoy//contrib/kafka/filters/network/source:kafka_broker_config_lib",
+        "@envoy//contrib/kafka/filters/network/source/mesh:config_lib",
+        "@envoy//contrib/mysql_proxy/filters/network/source:config",
+        "@envoy//contrib/postgres_proxy/filters/network/source:config",
+        "@envoy//contrib/rocketmq_proxy/filters/network/source:config",
+        "@envoy//contrib/sip_proxy/filters/network/source:config",
+        "@envoy//contrib/sip_proxy/filters/network/source/router:config",
+        "@envoy//contrib/squash/filters/http/source:config",
+        "@envoy//contrib/upstreams/http/dubbo_tcp/source:config"
     ],
 )
 

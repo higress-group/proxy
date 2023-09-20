@@ -72,8 +72,10 @@ else
 fi
 
 # Build image to use
-TOOLS_REGISTRY_PROVIDER=${TOOLS_REGISTRY_PROVIDER:-gcr.io}
-PROJECT_ID=${PROJECT_ID:-istio-testing}
+#TOOLS_REGISTRY_PROVIDER=${TOOLS_REGISTRY_PROVIDER:-gcr.io}
+#PROJECT_ID=${PROJECT_ID:-istio-testing}
+TOOLS_REGISTRY_PROVIDER=${TOOLS_REGISTRY_PROVIDER:-higress-registry.cn-hangzhou.cr.aliyuncs.com}
+PROJECT_ID=${PROJECT_ID:-higress}
 if [[ "${IMAGE_VERSION:-}" == "" ]]; then
   IMAGE_VERSION=release-1.18-42fd8fbb44dd6694035e729bcadb2cf21157ee73
 fi

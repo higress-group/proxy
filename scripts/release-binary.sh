@@ -19,7 +19,7 @@
 set -ex
 
 # Use clang for the release builds.
-export PATH=/usr/lib/llvm-10/bin:$PATH
+export PATH=/usr/lib/llvm/bin:$PATH
 export CC=${CC:-clang}
 export CXX=${CXX:-clang++}
 
@@ -103,14 +103,14 @@ fi
 # The proxy binary name.
 SHA="$(git rev-parse --verify HEAD)"
 
-if [ -n "${DST}" ]; then
-  # If binary already exists skip.
-  # Use the name of the last artifact to make sure that everything was uploaded.
-  BINARY_NAME="${HOME}/istio-proxy-debug-${SHA}.deb"
-  gsutil stat "${DST}/${BINARY_NAME}" \
-    && { echo 'Binary already exists'; exit 0; } \
-    || echo 'Building a new binary.'
-fi
+#if [ -n "${DST}" ]; then
+#  # If binary already exists skip.
+#  # Use the name of the last artifact to make sure that everything was uploaded.
+#  BINARY_NAME="${HOME}/istio-proxy-debug-${SHA}.deb"
+#  gsutil stat "${DST}/${BINARY_NAME}" \
+#    && { echo 'Binary already exists'; exit 0; } \
+#    || echo 'Building a new binary.'
+#fi
 
 ARCH_NAME="k8"
 case "$(uname -m)" in
@@ -121,12 +121,13 @@ esac
 # See: https://github.com/istio/istio/issues/15714 for details.
 # k8-opt is the output directory for x86_64 optimized builds (-c opt, so --config=release-symbol and --config=release).
 # k8-dbg is the output directory for -c dbg builds.
-for config in release release-symbol asan debug
+#for config in release release-symbol asan debug
+for config in release
 do
   case $config in
     "release" )
       CONFIG_PARAMS="--config=release"
-      BINARY_BASE_NAME="${BASE_BINARY_NAME}-alpha"
+      BINARY_BASE_NAME="${BASE_BINARY_NAME}"
       # shellcheck disable=SC2086
       BAZEL_OUT="$(bazel info ${BAZEL_BUILD_ARGS} output_path)/${ARCH_NAME}-opt/bin"
       ;;
@@ -154,7 +155,7 @@ do
   export BUILD_CONFIG=${config}
 
   echo "Building ${config} proxy"
-  BINARY_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.tar.gz"
+  BINARY_NAME="${HOME}/package/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.tar.gz"
   DWP_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.dwp"
   SHA256_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.sha256"
   # shellcheck disable=SC2086
@@ -178,36 +179,36 @@ if [ "${BUILD_ENVOY_BINARY_ONLY}" -eq 1 ]; then
 fi
 
 # Build and publish Wasm plugins
-extensions=(metadata_exchange)
-TMP_WASM=$(mktemp -d -t wasm-plugins-XXXXXXXXXX)
-trap 'rm -rf ${TMP_WASM}' EXIT
-make build_wasm
-if [ -n "${DST}" ]; then
-  for extension in "${extensions[@]}"; do
-    # Rename the plugin file and generate sha256 for it
-    WASM_NAME="${extension}-${SHA}.wasm"
-    WASM_COMPILED_NAME="${extension}-${SHA}.compiled.wasm"
-    WASM_PATH="${TMP_WASM}/${WASM_NAME}"
-    WASM_COMPILED_PATH="${TMP_WASM}/${WASM_COMPILED_NAME}"
-    SHA256_PATH="${WASM_PATH}.sha256"
-    SHA256_COMPILED_PATH="${WASM_COMPILED_PATH}.sha256"
-    # shellcheck disable=SC2086
-    BAZEL_TARGET=$(bazel info ${BAZEL_BUILD_ARGS} output_path)/${ARCH_NAME}-opt/bin/extensions/${extension}.wasm
-    # shellcheck disable=SC2086
-    BAZEL_COMPILED_TARGET=$(bazel info ${BAZEL_BUILD_ARGS} output_path)/${ARCH_NAME}-opt/bin/extensions/${extension}.compiled.wasm
-    cp "${BAZEL_TARGET}" "${WASM_PATH}"
-    cp "${BAZEL_COMPILED_TARGET}" "${WASM_COMPILED_PATH}"
-    sha256sum "${WASM_PATH}" > "${SHA256_PATH}"
-    sha256sum "${WASM_COMPILED_PATH}" > "${SHA256_COMPILED_PATH}"
-
-    # push wasm files and sha to the given bucket
-    gsutil stat "${DST}/${WASM_NAME}" \
-      && { echo "WASM file ${WASM_NAME} already exist"; continue; } \
-      || echo "Pushing the WASM file ${WASM_NAME}"
-    gsutil stat "${DST}/${WASM_COMPILED_NAME}" \
-      && { echo "WASM file ${WASM_COMPILED_NAME} already exist"; continue; } \
-      || echo "Pushing the WASM file ${WASM_COMPILED_NAME}"
-    gsutil cp "${WASM_PATH}" "${SHA256_PATH}" "${DST}"
-    gsutil cp "${WASM_COMPILED_PATH}" "${SHA256_COMPILED_PATH}" "${DST}"
-  done
-fi
+#extensions=(metadata_exchange)
+#TMP_WASM=$(mktemp -d -t wasm-plugins-XXXXXXXXXX)
+#trap 'rm -rf ${TMP_WASM}' EXIT
+#make build_wasm
+#if [ -n "${DST}" ]; then
+#  for extension in "${extensions[@]}"; do
+#    # Rename the plugin file and generate sha256 for it
+#    WASM_NAME="${extension}-${SHA}.wasm"
+#    WASM_COMPILED_NAME="${extension}-${SHA}.compiled.wasm"
+#    WASM_PATH="${TMP_WASM}/${WASM_NAME}"
+#    WASM_COMPILED_PATH="${TMP_WASM}/${WASM_COMPILED_NAME}"
+#    SHA256_PATH="${WASM_PATH}.sha256"
+#    SHA256_COMPILED_PATH="${WASM_COMPILED_PATH}.sha256"
+#    # shellcheck disable=SC2086
+#    BAZEL_TARGET=$(bazel info ${BAZEL_BUILD_ARGS} output_path)/${ARCH_NAME}-opt/bin/extensions/${extension}.wasm
+#    # shellcheck disable=SC2086
+#    BAZEL_COMPILED_TARGET=$(bazel info ${BAZEL_BUILD_ARGS} output_path)/${ARCH_NAME}-opt/bin/extensions/${extension}.compiled.wasm
+#    cp "${BAZEL_TARGET}" "${WASM_PATH}"
+#    cp "${BAZEL_COMPILED_TARGET}" "${WASM_COMPILED_PATH}"
+#    sha256sum "${WASM_PATH}" > "${SHA256_PATH}"
+#    sha256sum "${WASM_COMPILED_PATH}" > "${SHA256_COMPILED_PATH}"
+#
+#    # push wasm files and sha to the given bucket
+#    gsutil stat "${DST}/${WASM_NAME}" \
+#      && { echo "WASM file ${WASM_NAME} already exist"; continue; } \
+#      || echo "Pushing the WASM file ${WASM_NAME}"
+#    gsutil stat "${DST}/${WASM_COMPILED_NAME}" \
+#      && { echo "WASM file ${WASM_COMPILED_NAME} already exist"; continue; } \
+#      || echo "Pushing the WASM file ${WASM_COMPILED_NAME}"
+#    gsutil cp "${WASM_PATH}" "${SHA256_PATH}" "${DST}"
+#    gsutil cp "${WASM_COMPILED_PATH}" "${SHA256_COMPILED_PATH}" "${DST}"
+#  done
+#fi

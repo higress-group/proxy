@@ -28,7 +28,7 @@ static constexpr char StatPrefix[] = "metadata_exchange.";
 
 Network::FilterFactoryCb createFilterFactoryHelper(
     const envoy::tcp::metadataexchange::config::MetadataExchange& proto_config,
-    Server::Configuration::CommonFactoryContext& context, FilterDirection filter_direction) {
+    Server::Configuration::ServerFactoryContext& context, FilterDirection filter_direction) {
   ASSERT(!proto_config.protocol().empty());
 
   MetadataExchangeConfigSharedPtr filter_config(std::make_shared<MetadataExchangeConfig>(
@@ -53,11 +53,12 @@ ProtobufTypes::MessagePtr MetadataExchangeConfigFactory::createEmptyConfigProto(
 Network::FilterFactoryCb MetadataExchangeConfigFactory::createFilterFactory(
     const envoy::tcp::metadataexchange::config::MetadataExchange& proto_config,
     Server::Configuration::FactoryContext& context) {
-  return createFilterFactoryHelper(proto_config, context, FilterDirection::Downstream);
+  return createFilterFactoryHelper(proto_config, context.getServerFactoryContext(),
+                                   FilterDirection::Downstream);
 }
 
 Network::FilterFactoryCb MetadataExchangeUpstreamConfigFactory::createFilterFactoryFromProto(
-    const Protobuf::Message& config, Server::Configuration::CommonFactoryContext& context) {
+    const Protobuf::Message& config, Server::Configuration::UpstreamFactoryContext& context) {
   return createFilterFactory(
       dynamic_cast<const envoy::tcp::metadataexchange::config::MetadataExchange&>(config), context);
 }
@@ -68,8 +69,9 @@ ProtobufTypes::MessagePtr MetadataExchangeUpstreamConfigFactory::createEmptyConf
 
 Network::FilterFactoryCb MetadataExchangeUpstreamConfigFactory::createFilterFactory(
     const envoy::tcp::metadataexchange::config::MetadataExchange& proto_config,
-    Server::Configuration::CommonFactoryContext& context) {
-  return createFilterFactoryHelper(proto_config, context, FilterDirection::Upstream);
+    Server::Configuration::UpstreamFactoryContext& context) {
+  return createFilterFactoryHelper(proto_config, context.getServerFactoryContext(),
+                                   FilterDirection::Upstream);
 }
 
 /**

@@ -49,19 +49,20 @@ private:
  */
 class MetadataExchangeUpstreamConfigFactory
     : public Server::Configuration::NamedUpstreamNetworkFilterConfigFactory {
-public:
-  Network::FilterFactoryCb
-  createFilterFactoryFromProto(const Protobuf::Message&,
-                               Server::Configuration::CommonFactoryContext&) override;
+ public:
+  Network::FilterFactoryCb createFilterFactoryFromProto(
+      const Protobuf::Message& config,
+      Server::Configuration::UpstreamFactoryContext& context) override;
 
   ProtobufTypes::MessagePtr createEmptyConfigProto() override;
 
   std::string name() const override { return "envoy.filters.network.upstream.metadata_exchange"; }
 
-private:
-  Network::FilterFactoryCb
-  createFilterFactory(const envoy::tcp::metadataexchange::config::MetadataExchange& proto_config,
-                      Server::Configuration::CommonFactoryContext& context);
+ private:
+  Network::FilterFactoryCb createFilterFactory(
+      const envoy::tcp::metadataexchange::config::MetadataExchange&
+          proto_config,
+      Server::Configuration::UpstreamFactoryContext& context);
 };
 
 } // namespace MetadataExchange

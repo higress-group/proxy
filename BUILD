@@ -63,3 +63,52 @@ pkg_tar(
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
+
+envoy_cc_binary(
+    name = "envoy_with_contrib",
+    repository = "@envoy",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//extensions/access_log_policy:access_log_policy_lib",
+        "//extensions/metadata_exchange:metadata_exchange_lib",
+        "//extensions/stackdriver:stackdriver_plugin",
+        "//source/extensions/common/workload_discovery:api_lib",  # Experimental: WIP
+        "//source/extensions/filters/http/alpn:config_lib",
+        "//source/extensions/filters/http/authn:filter_lib",
+        "//source/extensions/filters/http/connect_authority",  # Experimental: ambient
+        "//source/extensions/filters/http/istio_stats",
+        "//source/extensions/filters/http/peer_metadata:filter_lib",
+        "//source/extensions/filters/listener/set_internal_dst_address:filter_lib",  # Experimental: ambient
+        "//source/extensions/filters/network/forward_downstream_sni:config_lib",
+        "//source/extensions/filters/network/istio_authn:config_lib",
+        "//source/extensions/filters/network/metadata_exchange:config_lib",
+        "//source/extensions/filters/network/sni_verifier:config_lib",
+        "//source/extensions/filters/network/tcp_cluster_rewrite:config_lib",
+        "@envoy//source/exe:envoy_main_entry_lib",
+    ]+ [
+        "@envoy//contrib/cryptomb/private_key_providers/source:config",
+        "@envoy//contrib/custom_cluster_plugins/cluster_fallback/source:config",
+        "@envoy//contrib/http_dubbo_transcoder/filters/http/source:config",
+        "@envoy//contrib/kafka/filters/network/source:kafka_broker_config_lib",
+        "@envoy//contrib/kafka/filters/network/source/mesh:config_lib",
+        "@envoy//contrib/mysql_proxy/filters/network/source:config",
+        "@envoy//contrib/postgres_proxy/filters/network/source:config",
+        "@envoy//contrib/rocketmq_proxy/filters/network/source:config",
+        "@envoy//contrib/sip_proxy/filters/network/source:config",
+        "@envoy//contrib/sip_proxy/filters/network/source/router:config",
+        "@envoy//contrib/squash/filters/http/source:config",
+        "@envoy//contrib/upstreams/http/dubbo_tcp/source:config",
+        "@envoy//source/common/http/match_delegate:config"
+    ],
+)
+
+pkg_tar(
+    name = "envoy_with_contrib_tar",
+    srcs = [":envoy_with_contrib"],
+    extension = "tar.gz",
+    mode = "0755",
+    package_dir = "/usr/local/bin/",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)
+

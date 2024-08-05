@@ -34,12 +34,12 @@ bind(
 # 1. Determine SHA256 `wget https://github.com/envoyproxy/envoy/archive/$COMMIT.tar.gz && sha256sum $COMMIT.tar.gz`
 # 2. Update .bazelversion, envoy.bazelrc and .bazelrc if needed.
 #
-# Commit date: 2023-11-21
-ENVOY_SHA = "1cea1f307036be956cb8d5aa94077c61013c71bd"
+# Commit date: 2024-08-05
+ENVOY_SHA = "0e879db6ea4ece750b3e7394bcf6f4a630e63401"
 
-ENVOY_SHA256 = "43a25aa9c4e2ecf38caa244b71f0d8ad3972474b21280427cc107774ac71a031"
+ENVOY_SHA256 = "022a852ddc983439255d937deb34358afa561bf1cb8ad35f0c208a99f8c9d5d7"
 
-ENVOY_ORG = "envoyproxy"
+ENVOY_ORG = "higress-group"
 
 ENVOY_REPO = "envoy"
 
@@ -103,40 +103,40 @@ rules_pkg_dependencies()
 
 # Docker dependencies
 
-docker_dependencies()
+# docker_dependencies()
 
-load(
-    "@io_bazel_rules_docker//repositories:repositories.bzl",
-    container_repositories = "repositories",
-)
+# load(
+#     "@io_bazel_rules_docker//repositories:repositories.bzl",
+#     container_repositories = "repositories",
+# )
 
-container_repositories()
+# container_repositories()
 
-load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+# load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
-container_deps()
+# container_deps()
 
-load(
-    "@io_bazel_rules_docker//container:container.bzl",
-    "container_pull",
-)
+# load(
+#     "@io_bazel_rules_docker//container:container.bzl",
+#     "container_pull",
+# )
 
-container_pull(
-    name = "distroless_cc",
-    # Latest as of 10/21/2019. To update, remove this line, re-build, and copy the suggested digest.
-    digest = "sha256:86f16733f25964c40dcd34edf14339ddbb2287af2f7c9dfad88f0366723c00d7",
-    registry = "gcr.io",
-    repository = "distroless/cc",
-)
+# container_pull(
+#     name = "distroless_cc",
+#     # Latest as of 10/21/2019. To update, remove this line, re-build, and copy the suggested digest.
+#     digest = "sha256:86f16733f25964c40dcd34edf14339ddbb2287af2f7c9dfad88f0366723c00d7",
+#     registry = "gcr.io",
+#     repository = "distroless/cc",
+# )
 
-container_pull(
-    name = "bionic",
-    # Latest as of 10/21/2019. To update, remove this line, re-build, and copy the suggested digest.
-    digest = "sha256:3e83eca7870ee14a03b8026660e71ba761e6919b6982fb920d10254688a363d4",
-    registry = "index.docker.io",
-    repository = "library/ubuntu",
-    tag = "bionic",
-)
+# container_pull(
+#     name = "bionic",
+#     # Latest as of 10/21/2019. To update, remove this line, re-build, and copy the suggested digest.
+#     digest = "sha256:3e83eca7870ee14a03b8026660e71ba761e6919b6982fb920d10254688a363d4",
+#     registry = "index.docker.io",
+#     repository = "library/ubuntu",
+#     tag = "bionic",
+# )
 
 # End of docker dependencies
 

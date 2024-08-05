@@ -112,6 +112,7 @@ ENVOY_EXTENSIONS = {
     "envoy.filters.http.composite":                     "//source/extensions/filters/http/composite:config",
     "envoy.filters.http.connect_grpc_bridge":           "//source/extensions/filters/http/connect_grpc_bridge:config",
     "envoy.filters.http.csrf":                          "//source/extensions/filters/http/csrf:config",
+    "envoy.filters.http.custom_response":               "//source/extensions/filters/http/custom_response:factory",
     "envoy.filters.http.decompressor":                  "//source/extensions/filters/http/decompressor:config",
     "envoy.filters.http.dynamic_forward_proxy":         "//source/extensions/filters/http/dynamic_forward_proxy:config",
     "envoy.filters.http.ext_authz":                     "//source/extensions/filters/http/ext_authz:config",
@@ -329,6 +330,13 @@ ENVOY_EXTENSIONS = {
     "envoy.http.stateful_session.header":                "//source/extensions/http/stateful_session/header:config",
 
     #
+    # Custom response policies
+    #
+
+    "envoy.http.custom_response.redirect_policy":             "//source/extensions/http/custom_response/redirect_policy:redirect_policy_lib",
+    "envoy.http.custom_response.local_response_policy":       "//source/extensions/http/custom_response/local_response_policy:local_response_policy_lib",
+
+    #
     # QUIC extensions
     #
 
@@ -448,6 +456,8 @@ ENVOY_CONTRIB_EXTENSIONS = {
 
     "envoy.bootstrap.vcl":                                      "//contrib/vcl/source:config",
 
+    # Custom cluster plugins
+    "envoy.router.cluster_specifier_plugin.cluster_fallback":   "//contrib/custom_cluster_plugins/cluster_fallback/source:config",
     #
     # Connection Balance extensions
     #
@@ -461,14 +471,19 @@ ISTIO_DISABLED_EXTENSIONS = [
     "envoy.transport_sockets.tcp_stats",
 ]
 
+# on istio 1.12 we enable all contrib extension for 0 migration pain.
 ISTIO_ENABLED_CONTRIB_EXTENSIONS = [
-    "envoy.filters.http.golang",
-    "envoy.filters.network.golang",
+    "envoy.filters.http.squash",
+    "envoy.filters.http.sxg",
+    "envoy.filters.network.kafka_broker",
+    "envoy.filters.network.kafka_mesh",
     "envoy.filters.network.mysql_proxy",
     "envoy.filters.network.postgres_proxy",
+    "envoy.filters.network.rocketmq_proxy",
     "envoy.filters.network.sip_proxy",
     "envoy.filters.sip.router",
     "envoy.tls.key_providers.cryptomb",
+    "envoy.router.cluster_specifier_plugin.cluster_fallback",
     "envoy.tls.key_providers.qat",
     "envoy.network.connection_balance.dlb",
 ]

@@ -56,6 +56,19 @@ const ::Wasm::Common::FlatNode& nodeInfoWithNoPlatform(flatbuffers::FlatBufferBu
   return *flatbuffers::GetRoot<::Wasm::Common::FlatNode>(fbb.GetBufferPointer());
 }
 
+const ::Wasm::Common::FlatNode& nodeInfoWithNoPlatform(
+    flatbuffers::FlatBufferBuilder& fbb) {
+  auto name = fbb.CreateString("test_pod");
+  auto namespace_ = fbb.CreateString("test_namespace");
+  ::Wasm::Common::FlatNodeBuilder node(fbb);
+  node.add_name(name);
+  node.add_namespace_(namespace_);
+  auto data = node.Finish();
+  fbb.Finish(data);
+  return *flatbuffers::GetRoot<::Wasm::Common::FlatNode>(
+      fbb.GetBufferPointer());
+}
+
 google::api::MonitoredResource serverMonitoredResource() {
   google::api::MonitoredResource monitored_resource;
   monitored_resource.set_type(Common::kContainerMonitoredResource);

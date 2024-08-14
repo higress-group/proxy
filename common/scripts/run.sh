@@ -33,6 +33,10 @@ source "${WD}/setup_env.sh"
 
 MOUNT_SOURCE="${MOUNT_SOURCE:-${PWD}}"
 MOUNT_DEST="${MOUNT_DEST:-/work}"
+CONTAINER_OPTIONS="${CONTAINER_OPTIONS:---net=host}"
+MOUNT_ENVOY_SOURCE="${MOUNT_ENVOY_SOURCE:-`cd $MOUNT_SOURCE/../envoy;pwd`}"
+MOUNT_PACKAGE_SOURCE="${MOUNT_PACKAGE_SOURCE:-`cd $MOUNT_SOURCE/../package;pwd`}"
+MOUNT_ROOT_SOURCE="${MOUNT_ROOT_SOURCE:-`cd $MOUNT_SOURCE/..;pwd`}"
 
 read -ra DOCKER_RUN_OPTIONS <<< "${DOCKER_RUN_OPTIONS:-}"
 
@@ -52,7 +56,11 @@ read -ra DOCKER_RUN_OPTIONS <<< "${DOCKER_RUN_OPTIONS:-}"
     --env-file <(env | grep -v ${ENV_BLOCKLIST}) \
     -e IN_BUILD_CONTAINER=1 \
     -e TZ="${TIMEZONE:-$TZ}" \
+    --mount "type=bind,source=${MOUNT_PACKAGE_SOURCE},destination=/home/package" \
+    --mount "type=bind,source=${HOME}/.docker,destination=/home/.docker" \
     --mount "type=bind,source=${MOUNT_SOURCE},destination=/work" \
+    --mount "type=bind,source=${MOUNT_ROOT_SOURCE}/..,destination=/parent" \
+    --mount "type=bind,source=${MOUNT_ENVOY_SOURCE},destination=/envoy" \
     --mount "type=volume,source=go,destination=/go" \
     --mount "type=volume,source=gocache,destination=/gocache" \
     --mount "type=volume,source=cache,destination=/home/.cache" \

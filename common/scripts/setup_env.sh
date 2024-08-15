@@ -72,8 +72,8 @@ else
 fi
 
 # Build image to use
-TOOLS_REGISTRY_PROVIDER=${TOOLS_REGISTRY_PROVIDER:-higress-registry.cn-hangzhou.cr.aliyuncs.com}
-PROJECT_ID=${PROJECT_ID:-higress}
+TOOLS_REGISTRY_PROVIDER=${TOOLS_REGISTRY_PROVIDER:-gcr.io}
+PROJECT_ID=${PROJECT_ID:-istio-testing}
 if [[ "${IMAGE_VERSION:-}" == "" ]]; then
   IMAGE_VERSION=release-1.19-ef344298e65eeb2d9e2d07b87eb4e715c2def613
 fi

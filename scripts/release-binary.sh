@@ -49,7 +49,7 @@ DST=""
 CHECK=1
 
 # Defines the base binary name for artifacts. For example, this will be "envoy-debug".
-BASE_BINARY_NAME="${BASE_BINARY_NAME:-"envoy_with_contrib"}"
+BASE_BINARY_NAME="${BASE_BINARY_NAME:-"envoy"}"
 
 # If enabled, we will just build the Envoy binary rather than wasm, etc
 BUILD_ENVOY_BINARY_ONLY="${BUILD_ENVOY_BINARY_ONLY:-0}"
@@ -150,7 +150,7 @@ do
   DWP_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.dwp"
   SHA256_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.sha256"
   # shellcheck disable=SC2086
-  bazel build ${BAZEL_BUILD_ARGS} ${CONFIG_PARAMS} //:envoy_tar //:envoy.dwp
+  bazel build ${BAZEL_BUILD_ARGS} ${CONFIG_PARAMS} //:envoy_with_contrib_tar //:envoy.dwp
   BAZEL_TARGET="${BAZEL_OUT}/envoy_tar.tar.gz"
   DWP_TARGET="${BAZEL_OUT}/envoy.dwp"
   cp -f "${BAZEL_TARGET}" "${BINARY_NAME}"

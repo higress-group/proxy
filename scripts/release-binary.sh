@@ -150,7 +150,7 @@ do
   DWP_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.dwp"
   SHA256_NAME="${HOME}/${BINARY_BASE_NAME}-${SHA}${ARCH_SUFFIX}.sha256"
   # shellcheck disable=SC2086
-  bazel build ${BAZEL_BUILD_ARGS} ${CONFIG_PARAMS} //:envoy_with_contrib_tar //:envoy.dwp
+  bazel build ${BAZEL_BUILD_ARGS} ${CONFIG_PARAMS} //:envoy_tar //:envoy.dwp
   BAZEL_TARGET="${BAZEL_OUT}/envoy_tar.tar.gz"
   DWP_TARGET="${BAZEL_OUT}/envoy.dwp"
   cp -f "${BAZEL_TARGET}" "${BINARY_NAME}"

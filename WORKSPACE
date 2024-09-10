@@ -35,9 +35,9 @@ bind(
 # 2. Update .bazelversion, envoy.bazelrc and .bazelrc if needed.
 #
 # Commit date: 2024-08-05
-ENVOY_SHA = "4741b1f5f1158376eba9dbb1e5419bd4c9905fd8"
+ENVOY_SHA = "9c9c3b717c9a3dd8cb8772ef5de86938aa1c93a8"
 
-ENVOY_SHA256 = "6752ab09720ef4a9fa1050f6e9315b469d5ac3f3ec7f8f56caf6e847d3d9382e"
+ENVOY_SHA256 = "5491845338165d306c7c1f0ba9a50e0c73e92dcfc9d8338c4f7808faeaa5c477"
 
 ENVOY_ORG = "higress-group"
 

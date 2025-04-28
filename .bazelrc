@@ -48,3 +48,5 @@ build --cxxopt -Wformat-security
 
 # Link pthread for flatbuffers
 build --host_linkopt=-pthread
+
+build --define signal_trace=disabled

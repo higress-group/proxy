@@ -56,6 +56,8 @@ envoy_cc_binary(
         "@envoy//contrib/golang/filters/http/source:config",
         "@envoy//contrib/golang/filters/network/source:config",
         "@envoy//contrib/golang/router/cluster_specifier/source:config",
+        "@envoy//contrib/mcp_sse_stateful_session/filters/http/source:config",
+        "@envoy//contrib/mcp_sse_stateful_session/http/source:config",
         "@envoy//source/common/http/match_delegate:config",
         "@envoy//source/exe:envoy_main_entry_lib",
     ],

@@ -30,7 +30,9 @@ envoy_cc_library(
     deps = [
         ":config_cc_proto",
         ":forward_downstream_sni_lib",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/network:filter_interface",
+        "@envoy//envoy/server:filter_config_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 
@@ -40,7 +42,8 @@ envoy_cc_library(
     hdrs = ["forward_downstream_sni.h"],
     repository = "@envoy",
     deps = [
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/network:filter_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 

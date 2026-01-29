@@ -36,7 +36,8 @@ envoy_cc_library(
         ":utils_lib",
         "//src/istio/authn:context_proto_cc_proto",
         "//src/istio/utils:attribute_names_lib",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/http:filter_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 
@@ -52,7 +53,9 @@ envoy_cc_library(
     repository = "@envoy",
     visibility = ["//visibility:public"],
     deps = [
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/network:connection_interface",
+        "@envoy//envoy/ssl:connection_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 

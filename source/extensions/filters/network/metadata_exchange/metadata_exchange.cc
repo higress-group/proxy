@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <string>
 
-#include "absl/base/internal/endian.h"
+#include "envoy/common/platform.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
 #include "envoy/network/connection.h"
@@ -38,8 +38,8 @@ constructProxyHeaderData(const Envoy::ProtobufWkt::Any& proxy_data) {
   std::string proxy_data_str = proxy_data.SerializeAsString();
   // Converting from host to network byte order so that most significant byte is
   // placed first.
-  initial_header.magic = absl::ghtonl(MetadataExchangeInitialHeader::magic_number);
-  initial_header.data_size = absl::ghtonl(proxy_data_str.length());
+  initial_header.magic = htobe32(MetadataExchangeInitialHeader::magic_number);
+  initial_header.data_size = htobe32(proxy_data_str.length());
 
   ::Envoy::Buffer::OwnedImpl initial_header_buffer{absl::string_view(
       reinterpret_cast<const char*>(&initial_header), sizeof(MetadataExchangeInitialHeader))};
@@ -219,7 +219,7 @@ void MetadataExchangeFilter::tryReadInitialProxyHeader(Buffer::Instance& data) {
   }
   MetadataExchangeInitialHeader initial_header;
   data.copyOut(0, initial_header_length, &initial_header);
-  if (absl::gntohl(initial_header.magic) != MetadataExchangeInitialHeader::magic_number) {
+  if (be32toh(initial_header.magic) != MetadataExchangeInitialHeader::magic_number) {
     config_->stats().initial_header_not_found_.inc();
     setMetadataNotFoundFilterState();
     ENVOY_LOG(warn, "Incorrect istio-peer-exchange ALPN magic. Peer missing TCP "
@@ -227,7 +227,7 @@ void MetadataExchangeFilter::tryReadInitialProxyHeader(Buffer::Instance& data) {
     conn_state_ = Invalid;
     return;
   }
-  proxy_data_length_ = absl::gntohl(initial_header.data_size);
+  proxy_data_length_ = be32toh(initial_header.data_size);
   // Drain the initial header length bytes read.
   data.drain(initial_header_length);
   conn_state_ = ReadingProxyHeader;

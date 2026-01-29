@@ -43,7 +43,7 @@ ENVOY_EXTENSIONS = {
     #
 
     "envoy.grpc_credentials.file_based_metadata":       "//source/extensions/grpc_credentials/file_based_metadata:config",
-    "envoy.grpc_credentials.aws_iam":                   "//source/extensions/grpc_credentials/aws_iam:config",
+    # "envoy.grpc_credentials.aws_iam" removed in Envoy 1.36
 
     #
     # WASM
@@ -219,10 +219,10 @@ ENVOY_EXTENSIONS = {
     # Tracers
     #
 
-    "envoy.tracers.dynamic_ot":                         "//source/extensions/tracers/dynamic_ot:config",
+    # "envoy.tracers.dynamic_ot" removed in Envoy 1.36
     "envoy.tracers.datadog":                            "//source/extensions/tracers/datadog:config",
     "envoy.tracers.zipkin":                             "//source/extensions/tracers/zipkin:config",
-    "envoy.tracers.opencensus":                         "//source/extensions/tracers/opencensus:config",
+    # "envoy.tracers.opencensus" removed in Envoy 1.36
     "envoy.tracers.xray":                               "//source/extensions/tracers/xray:config",
     "envoy.tracers.skywalking":                         "//source/extensions/tracers/skywalking:config",
     "envoy.tracers.opentelemetry":                      "//source/extensions/tracers/opentelemetry:config",
@@ -287,7 +287,7 @@ ENVOY_EXTENSIONS = {
     "envoy.wasm.runtime.null":                          "//source/extensions/wasm_runtime/null:config",
     "envoy.wasm.runtime.v8":                            "//source/extensions/wasm_runtime/v8:config",
     "envoy.wasm.runtime.wamr":                          "//source/extensions/wasm_runtime/wamr:config",
-    "envoy.wasm.runtime.wavm":                          "//source/extensions/wasm_runtime/wavm:config",
+    # "envoy.wasm.runtime.wavm" removed in Envoy 1.36
     "envoy.wasm.runtime.wasmtime":                      "//source/extensions/wasm_runtime/wasmtime:config",
 
     #
@@ -340,7 +340,7 @@ ENVOY_EXTENSIONS = {
     # QUIC extensions
     #
 
-    "envoy.quic.deterministic_connection_id_generator": "//source/extensions/quic/connection_id_generator:envoy_deterministic_connection_id_generator_config",
+    "envoy.quic.deterministic_connection_id_generator": "//source/extensions/quic/connection_id_generator/deterministic:envoy_deterministic_connection_id_generator_config",
     "envoy.quic.crypto_stream.server.quiche":           "//source/extensions/quic/crypto_stream:envoy_quic_default_crypto_server_stream",
     "envoy.quic.proof_source.filter_chain":             "//source/extensions/quic/proof_source:envoy_quic_default_proof_source",
 
@@ -382,7 +382,7 @@ ENVOY_EXTENSIONS = {
     # Custom matchers
     #
 
-    "envoy.matching.custom_matchers.trie_matcher":     "//source/extensions/common/matcher:trie_matcher_lib",
+    # "envoy.matching.custom_matchers.trie_matcher" removed in Envoy 1.36, use ip_range_matcher or domain_matcher instead
 
     #
     # Header Validators
@@ -419,9 +419,9 @@ ENVOY_CONTRIB_EXTENSIONS = {
     # HTTP filters
     #
 
-    "envoy.filters.http.dynamo":                                "//contrib/dynamo/filters/http/dynamo:config",
+    "envoy.filters.http.dynamo":                                "//contrib/dynamo/filters/http/source:config",
     "envoy.filters.http.golang":                                "//contrib/golang/filters/http/source:config",
-    "envoy.filters.http.squash":                                "//contrib/squash/filters/http/source:config",
+    # "envoy.filters.http.squash" removed in Envoy 1.36
     "envoy.filters.http.sxg":                                   "//contrib/sxg/filters/http/source:config",
 
     #
@@ -430,7 +430,7 @@ ENVOY_CONTRIB_EXTENSIONS = {
 
     "envoy.filters.network.client_ssl_auth":                    "//contrib/client_ssl_auth/filters/network/source:config",
     "envoy.filters.network.golang":                             "//contrib/golang/filters/network/source:config",
-    "envoy.filters.network.kafka_broker":                       "//contrib/kafka/filters/network/source:kafka_broker_config_lib",
+    "envoy.filters.network.kafka_broker":                       "//contrib/kafka/filters/network/source/broker:config_lib",
     "envoy.filters.network.kafka_mesh":                         "//contrib/kafka/filters/network/source/mesh:config_lib",
     "envoy.filters.network.mysql_proxy":                        "//contrib/mysql_proxy/filters/network/source:config",
     "envoy.filters.network.postgres_proxy":                     "//contrib/postgres_proxy/filters/network/source:config",
@@ -462,7 +462,7 @@ ENVOY_CONTRIB_EXTENSIONS = {
     # Connection Balance extensions
     #
 
-    "envoy.network.connection_balance.dlb":                     "//contrib/network/connection_balance/dlb/source:connection_balancer",
+    "envoy.network.connection_balance.dlb":                     "//contrib/dlb/source:connection_balancer",
 }
 
 
@@ -473,7 +473,7 @@ ISTIO_DISABLED_EXTENSIONS = [
 
 # on istio 1.12 we enable all contrib extension for 0 migration pain.
 ISTIO_ENABLED_CONTRIB_EXTENSIONS = [
-    "envoy.filters.http.squash",
+    # "envoy.filters.http.squash",  # Removed in Envoy 1.36
     "envoy.filters.http.sxg",
     "envoy.filters.network.kafka_broker",
     "envoy.filters.network.kafka_mesh",

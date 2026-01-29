@@ -30,7 +30,8 @@ envoy_cc_library(
     repository = "@envoy",
     deps = [
         "//external:tcp_cluster_rewrite_config_cc_proto",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/network:filter_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 
@@ -42,7 +43,9 @@ envoy_cc_library(
     deps = [
         ":tcp_cluster_rewrite_lib",
         "//external:tcp_cluster_rewrite_config_cc_proto",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/network:filter_interface",
+        "@envoy//envoy/server:filter_config_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 

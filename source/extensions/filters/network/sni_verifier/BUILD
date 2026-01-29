@@ -43,6 +43,8 @@ envoy_cc_library(
     external_deps = ["ssl"],
     repository = "@envoy",
     deps = [
+        "@envoy//envoy/buffer:buffer_interface",
+        "@envoy//envoy/network:connection_interface",
         "@envoy//envoy/network:filter_interface",
         "@envoy//envoy/stats:stats_interface",
         "@envoy//source/common/common:minimal_logger_lib",

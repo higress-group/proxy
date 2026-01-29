@@ -195,7 +195,10 @@ envoy_cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":node_info_fb_cc",
+        "@envoy//envoy/common:hashable_interface",
         "@envoy//envoy/network:filter_interface",
+        "@envoy//envoy/ssl:connection_interface",
+        "@envoy//envoy/stream_info:filter_state_interface",
         "@envoy//source/common/common:minimal_logger_lib",
     ],
 )

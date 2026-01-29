@@ -120,17 +120,19 @@ private:
         : Config::SubscriptionBase<istio::workload::Workload>(
               parent.factory_context_.messageValidationVisitor(), "uid"),
           parent_(parent) {
-      subscription_ = parent.factory_context_.clusterManager()
+      auto subscription_or_error = parent.factory_context_.clusterManager()
                           .subscriptionFactory()
                           .subscriptionFromConfigSource(
                               parent.config_source_, Grpc::Common::typeUrl(getResourceName()),
                               *parent.scope_, *this, resource_decoder_, {});
+      THROW_IF_NOT_OK(subscription_or_error.status());
+      subscription_ = std::move(subscription_or_error.value());
     }
     void start() { subscription_->start({}); }
 
   private:
     // Config::SubscriptionCallbacks
-    void onConfigUpdate(const std::vector<Config::DecodedResourceRef>& resources,
+    absl::Status onConfigUpdate(const std::vector<Config::DecodedResourceRef>& resources,
                         const std::string&) override {
       AddressIndexSharedPtr index = std::make_shared<AddressIndex>();
       for (const auto& resource : resources) {
@@ -143,8 +145,9 @@ private:
         }
       }
       parent_.reset(index);
+      return absl::OkStatus();
     }
-    void onConfigUpdate(const std::vector<Config::DecodedResourceRef>& added_resources,
+    absl::Status onConfigUpdate(const std::vector<Config::DecodedResourceRef>& added_resources,
                         const Protobuf::RepeatedPtrField<std::string>& removed_resources,
                         const std::string&) override {
       AddressIndexSharedPtr added = std::make_shared<AddressIndex>();
@@ -163,6 +166,7 @@ private:
         removed->push_back(resource);
       }
       parent_.update(added, removed);
+      return absl::OkStatus();
     }
     void onConfigUpdateFailed(Config::ConfigUpdateFailureReason, const EnvoyException*) override {
       // Do nothing - feature is automatically disabled.
@@ -210,6 +214,10 @@ public:
           return std::make_shared<WorkloadMetadataProviderImpl>(config_.config_source(),
                                                                 factory_context_);
         });
+  }
+  
+  void onWorkerThreadInitialized() override {
+    // No per-worker initialization needed
   }
 
 private:

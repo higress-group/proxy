@@ -40,7 +40,7 @@ namespace {
 MATCHER_P(MapEq, rhs, "") { return MessageDifferencer::Equals(arg, rhs); }
 
 void ConstructProxyHeaderData(::Envoy::Buffer::OwnedImpl& serialized_header,
-                              Envoy::ProtobufWkt::Any& proxy_header,
+                              google::protobuf::Any& proxy_header,
                               MetadataExchangeInitialHeader* initial_header) {
   std::string serialized_proxy_header = proxy_header.SerializeAsString();
   memset(initial_header, 0, sizeof(MetadataExchangeInitialHeader));
@@ -80,8 +80,8 @@ public:
     (*productpage_value_.mutable_fields())["labels"].set_string_value("{app, productpage}");
   }
 
-  Envoy::ProtobufWkt::Struct details_value_;
-  Envoy::ProtobufWkt::Struct productpage_value_;
+  google::protobuf::Struct details_value_;
+  google::protobuf::Struct productpage_value_;
   MetadataExchangeConfigSharedPtr config_;
   std::unique_ptr<MetadataExchangeFilter> filter_;
   Stats::IsolatedStoreImpl scope_;
@@ -102,7 +102,7 @@ TEST_F(MetadataExchangeFilterTest, MetadataExchangeFound) {
 
   ::Envoy::Buffer::OwnedImpl data;
   MetadataExchangeInitialHeader initial_header;
-  Envoy::ProtobufWkt::Any productpage_any_value;
+  google::protobuf::Any productpage_any_value;
   *productpage_any_value.mutable_type_url() = "type.googleapis.com/google.protobuf.Struct";
   *productpage_any_value.mutable_value() = productpage_value_.SerializeAsString();
   ConstructProxyHeaderData(data, productpage_any_value, &initial_header);

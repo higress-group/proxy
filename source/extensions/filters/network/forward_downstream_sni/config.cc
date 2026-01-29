@@ -23,7 +23,7 @@
 namespace Envoy {
 namespace Tcp {
 namespace ForwardDownstreamSni {
-Network::FilterFactoryCb
+absl::StatusOr<Network::FilterFactoryCb>
 ForwardDownstreamSniNetworkFilterConfigFactory::createFilterFactoryFromProto(
     const Protobuf::Message&, Server::Configuration::FactoryContext&) {
   return [](Network::FilterManager& filter_manager) -> void {

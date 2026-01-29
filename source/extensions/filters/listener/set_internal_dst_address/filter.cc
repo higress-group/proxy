@@ -57,8 +57,8 @@ Envoy::Network::FilterStatus Filter::onAccept(Envoy::Network::ListenerFilterCall
         ENVOY_LOG_MISC(trace, "Restore ORIGINAL_DST address: {}", tunnel_address->asString());
         // Should never throw as the stream info is initialized as empty.
         cb.filterState().setData(
-            Envoy::Network::DestinationAddress::key(),
-            std::make_shared<Envoy::Network::DestinationAddress>(tunnel_address),
+            "envoy.network.transport_socket.original_dst_address",
+            std::make_shared<Envoy::Network::AddressObject>(tunnel_address),
             Envoy::StreamInfo::FilterState::StateType::ReadOnly);
       } else {
         ENVOY_LOG_MISC(trace, "Failed to parse {} address: {}", TunnelAddressField,
@@ -84,8 +84,8 @@ Envoy::Network::FilterStatus Filter::onAccept(Envoy::Network::ListenerFilterCall
           object->port_ > 0
               ? Envoy::Network::Utility::getAddressWithPort(*local_address, object->port_)
               : local_address;
-      cb.filterState().setData(Envoy::Network::DestinationAddress::key(),
-                               std::make_shared<Envoy::Network::DestinationAddress>(tunnel_address),
+      cb.filterState().setData("envoy.network.transport_socket.original_dst_address",
+                               std::make_shared<Envoy::Network::AddressObject>(tunnel_address),
                                Envoy::StreamInfo::FilterState::StateType::ReadOnly);
     } else {
       ENVOY_LOG_MISC(trace, "Failed to parse filter state address: {}", object->value_);

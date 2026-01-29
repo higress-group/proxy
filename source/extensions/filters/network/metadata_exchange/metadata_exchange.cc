@@ -33,7 +33,7 @@ namespace MetadataExchange {
 namespace {
 
 std::unique_ptr<::Envoy::Buffer::OwnedImpl>
-constructProxyHeaderData(const Envoy::ProtobufWkt::Any& proxy_data) {
+constructProxyHeaderData(const google::protobuf::Any& proxy_data) {
   MetadataExchangeInitialHeader initial_header;
   std::string proxy_data_str = proxy_data.SerializeAsString();
   // Converting from host to network byte order so that most significant byte is
@@ -183,8 +183,8 @@ void MetadataExchangeFilter::writeNodeMetadata() {
     return;
   }
 
-  Envoy::ProtobufWkt::Struct data;
-  Envoy::ProtobufWkt::Struct* metadata =
+  google::protobuf::Struct data;
+  google::protobuf::Struct* metadata =
       (*data.mutable_fields())[ExchangeMetadataHeader].mutable_struct_value();
   getMetadata(metadata);
   std::string metadata_id = getMetadataId();
@@ -192,7 +192,7 @@ void MetadataExchangeFilter::writeNodeMetadata() {
     (*data.mutable_fields())[ExchangeMetadataHeaderId].set_string_value(metadata_id);
   }
   if (data.fields_size() > 0) {
-    Envoy::ProtobufWkt::Any metadata_any_value;
+    google::protobuf::Any metadata_any_value;
     *metadata_any_value.mutable_type_url() = StructTypeUrl;
     std::string serialized_data;
     serializeToStringDeterministic(data, &serialized_data);
@@ -245,7 +245,7 @@ void MetadataExchangeFilter::tryReadProxyData(Buffer::Instance& data) {
   }
   std::string proxy_data_buf =
       std::string(static_cast<const char*>(data.linearize(proxy_data_length_)), proxy_data_length_);
-  Envoy::ProtobufWkt::Any proxy_data;
+  google::protobuf::Any proxy_data;
   if (!proxy_data.ParseFromString(proxy_data_buf)) {
     config_->stats().header_not_found_.inc();
     setMetadataNotFoundFilterState();
@@ -256,15 +256,15 @@ void MetadataExchangeFilter::tryReadProxyData(Buffer::Instance& data) {
   data.drain(proxy_data_length_);
 
   // Set Metadata
-  Envoy::ProtobufWkt::Struct value_struct =
-      Envoy::MessageUtil::anyConvert<Envoy::ProtobufWkt::Struct>(proxy_data);
+  google::protobuf::Struct value_struct =
+      Envoy::MessageUtil::anyConvert<google::protobuf::Struct>(proxy_data);
   auto key_metadata_it = value_struct.fields().find(ExchangeMetadataHeader);
   if (key_metadata_it != value_struct.fields().end()) {
     updatePeer(key_metadata_it->second.struct_value());
   }
   const auto key_metadata_id_it = value_struct.fields().find(ExchangeMetadataHeaderId);
   if (key_metadata_id_it != value_struct.fields().end()) {
-    Envoy::ProtobufWkt::Value val = key_metadata_id_it->second;
+    google::protobuf::Value val = key_metadata_id_it->second;
     updatePeerId(toAbslStringView(config_->filter_direction_ == FilterDirection::Downstream
                                       ? ::Wasm::Common::kDownstreamMetadataIdKey
                                       : ::Wasm::Common::kUpstreamMetadataIdKey),
@@ -272,7 +272,7 @@ void MetadataExchangeFilter::tryReadProxyData(Buffer::Instance& data) {
   }
 }
 
-void MetadataExchangeFilter::updatePeer(const Envoy::ProtobufWkt::Struct& struct_value) {
+void MetadataExchangeFilter::updatePeer(const google::protobuf::Struct& struct_value) {
   const auto fb = ::Wasm::Common::extractNodeFlatBufferFromStruct(struct_value);
 
   // Filter object captures schema by view, hence the global singleton for the

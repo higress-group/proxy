@@ -133,7 +133,7 @@ private:
   void tryReadProxyData(Buffer::Instance& data);
 
   // Helper function to share the metadata with other filters.
-  void updatePeer(const Envoy::ProtobufWkt::Struct& struct_value);
+  void updatePeer(const google::protobuf::Struct& struct_value);
   void updatePeerId(absl::string_view key, absl::string_view value);
 
   // Helper function to get Dynamic metadata.

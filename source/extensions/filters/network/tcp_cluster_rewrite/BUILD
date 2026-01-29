@@ -33,6 +33,7 @@ envoy_cc_library(
         "@envoy//envoy/network:connection_interface",
         "@envoy//envoy/network:filter_interface",
         "@envoy//source/common/common:minimal_logger_lib",
+        "@envoy//source/common/tcp_proxy:tcp_proxy",
     ],
 )
 

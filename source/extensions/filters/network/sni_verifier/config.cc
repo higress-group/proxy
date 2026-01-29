@@ -23,7 +23,7 @@ namespace Envoy {
 namespace Tcp {
 namespace SniVerifier {
 
-Network::FilterFactoryCb SniVerifierConfigFactory::createFilterFactoryFromProto(
+absl::StatusOr<Network::FilterFactoryCb> SniVerifierConfigFactory::createFilterFactoryFromProto(
     const Protobuf::Message&, Server::Configuration::FactoryContext& context) {
   return createFilterFactoryFromContext(context);
 }

@@ -29,8 +29,6 @@ namespace AuthN {
 namespace {
 // The JWT audience key name
 static const std::string kJwtAudienceKey = "aud";
-// The JWT issuer key name
-static const std::string kJwtIssuerKey = "iss";
 // The key name for the original claims in an exchanged token
 static const std::string kExchangedTokenOriginalPayload = "original_claims";
 

@@ -56,7 +56,7 @@ private:
       callbacks.addStreamFilter(filter);
     };
   }
-  Router::RouteSpecificFilterConfigConstSharedPtr
+  absl::StatusOr<Router::RouteSpecificFilterConfigConstSharedPtr>
   createRouteSpecificFilterConfigTyped(const io::istio::http::connect_authority::Config& config,
                                        Envoy::Server::Configuration::ServerFactoryContext&,
                                        ProtobufMessage::ValidationVisitor&) override {

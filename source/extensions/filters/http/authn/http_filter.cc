@@ -78,7 +78,7 @@ FilterHeadersStatus AuthenticationFilter::decodeHeaders(RequestHeaderMap& header
   if (filter_context_ != nullptr) {
     // Save auth results in the metadata, could be used later by RBAC and/or
     // mixer filter.
-    ProtobufWkt::Struct data;
+    ::google::protobuf::Struct data;
     Utils::Authentication::SaveAuthAttributesToStruct(filter_context_->authenticationResult(),
                                                       data);
     decoder_callbacks_->streamInfo().setDynamicMetadata(Utils::IstioFilterName::kAuthentication,

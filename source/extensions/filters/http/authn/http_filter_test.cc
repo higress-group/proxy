@@ -172,7 +172,7 @@ TEST_F(AuthenticationFilterTest, AllPass) {
   const auto* data = Utils::Authentication::GetResultFromMetadata(stream_info.dynamicMetadata());
   ASSERT_TRUE(data);
 
-  ProtobufWkt::Struct expected_data;
+  ::google::protobuf::Struct expected_data;
   ASSERT_TRUE(Protobuf::TextFormat::ParseFromString(R"(
        fields {
          key: "source.namespace"
@@ -237,7 +237,7 @@ TEST_F(AuthenticationFilterTest, IgnoreBothPass) {
   const auto* data = Utils::Authentication::GetResultFromMetadata(stream_info.dynamicMetadata());
   ASSERT_TRUE(data);
 
-  ProtobufWkt::Struct expected_data;
+  ::google::protobuf::Struct expected_data;
   ASSERT_TRUE(Protobuf::TextFormat::ParseFromString(R"(
        fields {
          key: "source.namespace"

@@ -37,7 +37,7 @@ envoy_cc_binary(
     deps = [
         "//extensions/access_log_policy:access_log_policy_lib",
         "//extensions/metadata_exchange:metadata_exchange_lib",
-        "//extensions/stackdriver:stackdriver_plugin",
+        # "//extensions/stackdriver:stackdriver_plugin",
         "//source/extensions/common/workload_discovery:api_lib",  # Experimental: WIP
         "//source/extensions/filters/http/alpn:config_lib",
         "//source/extensions/filters/http/authn:filter_lib",
@@ -58,7 +58,7 @@ envoy_cc_binary(
         "@envoy//contrib/golang/router/cluster_specifier/source:config",
         "@envoy//contrib/mcp_sse_stateful_session/filters/http/source:config",
         "@envoy//contrib/mcp_sse_stateful_session/http/source:config",
-        "@envoy//source/common/http/match_delegate:config",
+        "@envoy//source/extensions/filters/http/match_delegate:config",
         "@envoy//source/exe:envoy_main_entry_lib",
     ],
 )

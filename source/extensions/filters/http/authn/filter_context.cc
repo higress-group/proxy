@@ -67,7 +67,7 @@ void FilterContext::setPrincipal(const iaapi::PrincipalBinding& binding) {
     return;
   default:
     // Should never come here.
-    ENVOY_LOG(error, "Invalid binding value {}", binding);
+    ENVOY_LOG(error, "Invalid binding value {}", static_cast<int>(binding));
     return;
   }
 }

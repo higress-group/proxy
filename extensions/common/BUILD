@@ -182,6 +182,9 @@ envoy_cc_library(
     ],
     repository = "@envoy",
     visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_absl//absl/strings",
+    ],
 )
 
 envoy_cc_library(
@@ -192,8 +195,11 @@ envoy_cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":node_info_fb_cc",
+        "@envoy//envoy/common:hashable_interface",
         "@envoy//envoy/network:filter_interface",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/ssl:connection_interface",
+        "@envoy//envoy/stream_info:filter_state_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 

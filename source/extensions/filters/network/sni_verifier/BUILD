@@ -30,7 +30,9 @@ envoy_cc_library(
     deps = [
         ":config_cc_proto",
         ":sni_verifier_lib",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/network:filter_interface",
+        "@envoy//envoy/server:filter_config_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 
@@ -41,7 +43,11 @@ envoy_cc_library(
     external_deps = ["ssl"],
     repository = "@envoy",
     deps = [
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/buffer:buffer_interface",
+        "@envoy//envoy/network:connection_interface",
+        "@envoy//envoy/network:filter_interface",
+        "@envoy//envoy/stats:stats_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
     ],
 )
 

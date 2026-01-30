@@ -47,7 +47,7 @@ envoy_cc_library(
         ":alpn_filter",
         "//source/extensions/common:filter_names_lib",
         "@envoy//envoy/registry",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/server:filter_config_interface",
         "@envoy//source/extensions/filters/http/common:factory_base_lib",
     ],
 )

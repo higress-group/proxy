@@ -19,10 +19,21 @@
 #include "envoy/registry/registry.h"
 #include "envoy/server/factory_context.h"
 #include "envoy/singleton/manager.h"
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+
 #include "eval/public/builtin_func_registrar.h"
 #include "eval/public/cel_expr_builder_factory.h"
-#include "extensions/common/metadata_object.h"
 #include "parser/parser.h"
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
+#include "extensions/common/metadata_object.h"
 #include "source/common/grpc/common.h"
 #include "source/common/http/header_map_impl.h"
 #include "source/common/http/header_utility.h"
@@ -44,7 +55,7 @@ namespace IstioStats {
 namespace {
 constexpr absl::string_view CustomStatNamespace = "istiocustom";
 
-absl::string_view extractString(const ProtobufWkt::Struct& metadata, const std::string& key) {
+absl::string_view extractString(const ::google::protobuf::Struct& metadata, const std::string& key) {
   const auto& it = metadata.fields().find(key);
   if (it == metadata.fields().end()) {
     return {};
@@ -52,7 +63,7 @@ absl::string_view extractString(const ProtobufWkt::Struct& metadata, const std::
   return it->second.string_value();
 }
 
-absl::string_view extractMapString(const ProtobufWkt::Struct& metadata, const std::string& map_key,
+absl::string_view extractMapString(const ::google::protobuf::Struct& metadata, const std::string& map_key,
                                    const std::string& key) {
   const auto& it = metadata.fields().find(map_key);
   if (it == metadata.fields().end()) {
@@ -359,26 +370,20 @@ struct MetricOverrides : public Logger::Loggable<Logger::Id::filter> {
       return {};
     }
     if (expr_builder_ == nullptr) {
-      google::api::expr::runtime::InterpreterOptions options;
-      expr_builder_ = google::api::expr::runtime::CreateCelExpressionBuilder(options);
-      auto register_status = google::api::expr::runtime::RegisterBuiltinFunctions(
-          expr_builder_->GetRegistry(), options);
-      if (!register_status.ok()) {
-        throw Extensions::Filters::Common::Expr::CelException(
-            absl::StrCat("failed to register built-in functions: ", register_status.message()));
-      }
+      expr_builder_ = Extensions::Filters::Common::Expr::createBuilder(nullptr);
     }
-    parsed_exprs_.push_back(parse_status.value().expr());
-    compiled_exprs_.push_back(std::make_pair(
-        Extensions::Filters::Common::Expr::createExpression(*expr_builder_, parsed_exprs_.back()),
-        int_expr));
+    auto create_status = Extensions::Filters::Common::Expr::CompiledExpression::Create(
+        expr_builder_, parse_status.value().expr());
+    if (!create_status.ok()) {
+      return {};
+    }
+    compiled_exprs_.push_back(std::make_pair(std::move(create_status.value()), int_expr));
     uint32_t id = compiled_exprs_.size() - 1;
     expression_ids_.emplace(expr, id);
     return {id};
   }
-  Filters::Common::Expr::BuilderPtr expr_builder_;
-  std::vector<google::api::expr::v1alpha1::Expr> parsed_exprs_;
-  std::vector<std::pair<Filters::Common::Expr::ExpressionPtr, bool>> compiled_exprs_;
+  Filters::Common::Expr::BuilderInstanceSharedPtr expr_builder_;
+  std::vector<std::pair<Filters::Common::Expr::CompiledExpression, bool>> compiled_exprs_;
   absl::flat_hash_map<std::string, uint32_t> expression_ids_;
 };
 
@@ -408,7 +413,7 @@ public:
     if (rotate_interval_ms_ > 0) {
       ASSERT(delete_interval_ms_ < rotate_interval_ms_);
       ASSERT(delete_interval_ms_ >= 1000);
-      Event::Dispatcher& dispatcher = factory_context.mainThreadDispatcher();
+      Event::Dispatcher& dispatcher = factory_context.serverFactoryContext().mainThreadDispatcher();
       rotate_timer_ = dispatcher.createTimer([this] { onRotate(); });
       delete_timer_ = dispatcher.createTimer([this] { onDelete(); });
       rotate_timer_->enableTimer(std::chrono::milliseconds(rotate_interval_ms_));
@@ -452,11 +457,11 @@ private:
 struct Config : public Logger::Loggable<Logger::Id::filter> {
   Config(const stats::PluginConfig& proto_config,
          Server::Configuration::FactoryContext& factory_context)
-      : context_(factory_context.singletonManager().getTyped<Context>(
+      : context_(factory_context.serverFactoryContext().singletonManager().getTyped<Context>(
             SINGLETON_MANAGER_REGISTERED_NAME(Context),
             [&factory_context] {
-              return std::make_shared<Context>(factory_context.serverScope().symbolTable(),
-                                               factory_context.localInfo().node());
+              return std::make_shared<Context>(factory_context.serverFactoryContext().serverScope().symbolTable(),
+                                               factory_context.serverFactoryContext().localInfo().node());
             })),
         scope_(factory_context, PROTOBUF_GET_MS_OR_DEFAULT(proto_config, rotation_interval, 0),
                PROTOBUF_GET_MS_OR_DEFAULT(proto_config, graceful_deletion_interval,
@@ -467,7 +472,7 @@ struct Config : public Logger::Loggable<Logger::Id::filter> {
     reporter_ = Reporter::ClientSidecar;
     switch (proto_config.reporter()) {
     case stats::Reporter::UNSPECIFIED:
-      switch (factory_context.direction()) {
+      switch (factory_context.listenerInfo().direction()) {
       case envoy::config::core::v3::TrafficDirection::INBOUND:
         reporter_ = Reporter::ServerSidecar;
         break;
@@ -617,7 +622,7 @@ struct Config : public Logger::Loggable<Logger::Id::filter> {
         expr_values_.reserve(compiled_exprs.size());
         for (size_t id = 0; id < compiled_exprs.size(); id++) {
           Protobuf::Arena arena;
-          auto eval_status = compiled_exprs[id].first->Evaluate(*this, &arena);
+          auto eval_status = compiled_exprs[id].first.evaluate(*this, &arena);
           if (!eval_status.ok() || eval_status.value().IsError()) {
             expr_values_.push_back(std::make_pair(parent_.context_->unknown_, 0));
           } else {
@@ -783,10 +788,7 @@ public:
   }
 
   // AccessLog::Instance
-  void log(const Http::RequestHeaderMap* request_headers,
-           const Http::ResponseHeaderMap* response_headers,
-           const Http::ResponseTrailerMap* response_trailers, const StreamInfo::StreamInfo& info,
-           AccessLog::AccessLogType) override {
+  void log(const AccessLog::LogContext& context, const StreamInfo::StreamInfo& info) override {
     reportHelper(true);
     if (is_grpc_) {
       tags_.push_back({context_.request_protocol_, context_.grpc_});
@@ -799,9 +801,9 @@ public:
         {context_.response_code_, pool_.add(absl::StrCat(info.responseCode().value_or(0)))});
     if (is_grpc_) {
       auto const& optional_status = Grpc::Common::getGrpcStatus(
-          response_trailers ? *response_trailers
+          context.hasResponseTrailers() ? context.responseTrailers()
                             : *Http::StaticEmptyHeaders::get().response_trailers,
-          response_headers ? *response_headers : *Http::StaticEmptyHeaders::get().response_headers,
+          context.hasResponseHeaders() ? context.responseHeaders() : *Http::StaticEmptyHeaders::get().response_headers,
           info);
       tags_.push_back(
           {context_.grpc_response_status_,
@@ -810,6 +812,10 @@ public:
       tags_.push_back({context_.grpc_response_status_, context_.empty_});
     }
     populateFlagsAndConnectionSecurity(info);
+
+    const Http::RequestHeaderMap* request_headers = context.hasRequestHeaders() ? &context.requestHeaders() : nullptr;
+    const Http::ResponseHeaderMap* response_headers = context.hasResponseHeaders() ? &context.responseHeaders() : nullptr;
+    const Http::ResponseTrailerMap* response_trailers = context.hasResponseTrailers() ? &context.responseTrailers() : nullptr;
 
     Config::StreamOverrides stream(*config_, pool_, info, request_headers, response_headers,
                                    response_trailers);
@@ -1201,7 +1207,7 @@ private:
 Http::FilterFactoryCb IstioStatsFilterConfigFactory::createFilterFactoryFromProtoTyped(
     const stats::PluginConfig& proto_config, const std::string&,
     Server::Configuration::FactoryContext& factory_context) {
-  factory_context.api().customStatNamespaces().registerStatNamespace(CustomStatNamespace);
+  factory_context.serverFactoryContext().api().customStatNamespaces().registerStatNamespace(CustomStatNamespace);
   ConfigSharedPtr config = std::make_shared<Config>(proto_config, factory_context);
   config->recordVersion();
   return [config](Http::FilterChainFactoryCallbacks& callbacks) {
@@ -1219,7 +1225,7 @@ REGISTER_FACTORY(IstioStatsFilterConfigFactory,
 Network::FilterFactoryCb IstioStatsNetworkFilterConfigFactory::createFilterFactoryFromProtoTyped(
     const stats::PluginConfig& proto_config,
     Server::Configuration::FactoryContext& factory_context) {
-  factory_context.api().customStatNamespaces().registerStatNamespace(CustomStatNamespace);
+  factory_context.serverFactoryContext().api().customStatNamespaces().registerStatNamespace(CustomStatNamespace);
   ConfigSharedPtr config = std::make_shared<Config>(proto_config, factory_context);
   config->recordVersion();
   return [config](Network::FilterManager& filter_manager) {

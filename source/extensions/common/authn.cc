@@ -72,7 +72,7 @@ void Authentication::SaveAuthAttributesToStruct(const istio::authn::Result& resu
   }
 }
 
-const ProtobufWkt::Struct*
+const ::google::protobuf::Struct*
 Authentication::GetResultFromMetadata(const envoy::config::core::v3::Metadata& metadata) {
   const auto& iter = metadata.filter_metadata().find(Utils::IstioFilterName::kAuthentication);
   if (iter == metadata.filter_metadata().end()) {

@@ -47,7 +47,9 @@ envoy_cc_library(
         "//source/extensions/common:filter_names_lib",
         "//source/extensions/common:utils_lib",
         "//src/istio/authn:context_proto_cc_proto",
+        "@envoy//source/common/config:metadata_lib",
         "@envoy//source/common/http:headers_lib",
+        "@envoy//source/common/http:utility_lib",
         "@envoy//source/extensions/filters/http:well_known_names",
     ],
 )
@@ -69,7 +71,10 @@ envoy_cc_library(
         "//source/extensions/common:filter_names_lib",
         "//source/extensions/common:utils_lib",
         "//src/istio/authn:context_proto_cc_proto",
-        "@envoy//source/exe:envoy_common_lib",
+        "@envoy//envoy/http:filter_interface",
+        "@envoy//envoy/server:filter_config_interface",
+        "@envoy//source/common/common:minimal_logger_lib",
+        "@envoy//source/common/http:utility_lib",
     ],
 )
 

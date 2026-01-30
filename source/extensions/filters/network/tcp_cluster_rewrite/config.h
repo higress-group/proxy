@@ -34,7 +34,7 @@ namespace TcpClusterRewrite {
 class TcpClusterRewriteFilterConfigFactory
     : public Server::Configuration::NamedNetworkFilterConfigFactory {
 public:
-  Network::FilterFactoryCb
+  absl::StatusOr<Network::FilterFactoryCb>
   createFilterFactoryFromProto(const Protobuf::Message&,
                                Server::Configuration::FactoryContext&) override;
 

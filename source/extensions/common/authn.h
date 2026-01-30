@@ -32,7 +32,7 @@ public:
   // the input metadata is the request info's dynamic metadata. Authentication
   // result, if available, is stored under authentication filter metdata.
   // Returns nullptr if there is no data for that filter.
-  static const ProtobufWkt::Struct*
+  static const ::google::protobuf::Struct*
   GetResultFromMetadata(const envoy::config::core::v3::Metadata& metadata);
 };
 

@@ -25,7 +25,7 @@ namespace Envoy {
 namespace Tcp {
 namespace TcpClusterRewrite {
 
-Network::FilterFactoryCb TcpClusterRewriteFilterConfigFactory::createFilterFactoryFromProto(
+absl::StatusOr<Network::FilterFactoryCb> TcpClusterRewriteFilterConfigFactory::createFilterFactoryFromProto(
     const Protobuf::Message& config, Server::Configuration::FactoryContext&) {
   return createFilterFactory(dynamic_cast<const v2alpha1::TcpClusterRewrite&>(config));
 }

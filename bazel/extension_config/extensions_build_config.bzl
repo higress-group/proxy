@@ -400,6 +400,7 @@ ENVOY_EXTENSIONS = {
     "envoy.load_balancing_policies.maglev":            "//source/extensions/load_balancing_policies/maglev:config",
     "envoy.load_balancing_policies.ring_hash":         "//source/extensions/load_balancing_policies/ring_hash:config",
     "envoy.load_balancing_policies.subset":            "//source/extensions/load_balancing_policies/subset:config",
+    "envoy.load_balancing_policies.override_host":     "//source/extensions/load_balancing_policies/override_host:config",
 
     #
     # Config Subscription
